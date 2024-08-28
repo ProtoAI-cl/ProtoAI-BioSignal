@@ -1,0 +1,6 @@
+adafruit-circuitpython-ads1x15
+pwn
+websockets
+RPi.GPIO
+fastapi
+uvicorn

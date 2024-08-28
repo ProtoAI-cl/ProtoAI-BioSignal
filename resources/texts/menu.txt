@@ -1,0 +1,4 @@
+1) Captura datos para cerrar puño
+2) Captura de datos para entrenar el indice
+3) Envía datos
+4) Inicia API
