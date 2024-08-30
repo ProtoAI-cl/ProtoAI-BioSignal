@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <pigpio.h>
 
 int move(int pin[], int angle[]){
@@ -10,12 +9,12 @@ int move(int pin[], int angle[]){
      */
     if(gpioInitialise()<0){return 1;}
 
-    gpioSetMode(pin[0],PI_OUTPUT);
-    gpioSetMode(pin[1],PI_OUTPUT);
-    gpioSetMode(pin[2],PI_OUTPUT);
-    gpioSetMode(pin[3],PI_OUTPUT);
-    gpioSetMode(pin[4],PI_OUTPUT);
-    gpioSetMode(pin[5],PI_OUTPUT);
+    if(gpioSetMode(pin[0],PI_OUTPUT)!=0){return 1;}
+    if(gpioSetMode(pin[1],PI_OUTPUT)!=0){return 1;}
+    if(gpioSetMode(pin[2],PI_OUTPUT)!=0){return 1;}
+    if(gpioSetMode(pin[3],PI_OUTPUT)!=0){return 1;}
+    if(gpioSetMode(pin[4],PI_OUTPUT)!=0){return 1;}
+    if(gpioSetMode(pin[5],PI_OUTPUT)!=0){return 1;}
 
     gpioSetPWMrange(pin[0],180);
     gpioSetPWMrange(pin[1],180);
@@ -43,4 +42,12 @@ float percentage(int angle){
     // it by the desired angle, and adds 1 ms wich is the
     // base ms.
     return (angle/180.0) + 1;
+}
+
+void stopBoard(){
+    /*
+     * Stops the board, releases memory and stop
+     * any running thread.
+    */
+    gpioTerminate();
 }
