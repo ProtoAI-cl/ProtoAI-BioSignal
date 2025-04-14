@@ -1,4 +1,5 @@
 #include <pigpio.h>
+#include "moveHand.h"
 
 int move(int pin[], int angle[]){
     /*
@@ -7,30 +8,47 @@ int move(int pin[], int angle[]){
      * pin[] contains the pin number for each servo
      * angle[] contains the angle of movement desired
      */
-    if(gpioInitialise()<0){return 1;}
-
-    if(gpioSetMode(pin[0],PI_OUTPUT)!=0){return 1;}
-    if(gpioSetMode(pin[1],PI_OUTPUT)!=0){return 1;}
-    if(gpioSetMode(pin[2],PI_OUTPUT)!=0){return 1;}
-    if(gpioSetMode(pin[3],PI_OUTPUT)!=0){return 1;}
-    if(gpioSetMode(pin[4],PI_OUTPUT)!=0){return 1;}
-    if(gpioSetMode(pin[5],PI_OUTPUT)!=0){return 1;}
-
-    gpioSetPWMrange(pin[0],180);
-    gpioSetPWMrange(pin[1],180);
-    gpioSetPWMrange(pin[2],180);
-    gpioSetPWMrange(pin[3],180);
-    gpioSetPWMrange(pin[4],180);
-    gpioSetPWMrange(pin[5],180);
-
-    if(gpioPWM(pin[0],angle[0])!=0){return 1;}
-    if(gpioPWM(pin[1],angle[1])!=0){return 1;}
-    if(gpioPWM(pin[2],angle[2])!=0){return 1;}
-    if(gpioPWM(pin[3],angle[3])!=0){return 1;}
-    if(gpioPWM(pin[4],angle[4])!=0){return 1;}
-    if(gpioPWM(pin[5],angle[5])!=0){return 1;}
+    
+    if(initialiseServos(pin)!=0){return 1;}
+    if(openHand(pin)!=0){return 1;}
+    if(customMoveHand(pin, angle)!=0){return 1;}
 
     return 0;
+}
+
+void stopComunication(){
+    /*
+     * Stops the comunication, releases memory and stop
+     * any running thread.
+    */
+    gpioTerminate();
+}
+
+int initialiseServos(int pin[]){
+    if(gpioInitialise()<0){return 1;}
+    for(int indexPinFinger=0;indexPinFinger<=5;i++){
+        if(gpioSetMode(pin[indexPinFinger],PI_OUTPUT)!=0){return 1;}
+    }
+}
+
+int customMoveHand(int pin[], int angle[])
+{
+    for(int indexFinger=0;indexFinger<=5;indexFinger++){
+        if(gpioSetPWMrange(pin[indexFinger], angle[indexFinger])!=0){return 1;}
+    }
+    return 0;
+}
+
+void openHand(int pin[])
+{
+    int angle[5] = {180, 180, 180, 180, 180};
+    return customMoveHand(pin,angle)
+}
+
+void closeHand(int pin[])
+{
+    int angle[5] = {0, 0, 0, 0, 0};
+    return customMoveHand(pin,angle)
 }
 
 float percentage(int angle){
@@ -44,10 +62,4 @@ float percentage(int angle){
     return (angle/180.0) + 1;
 }
 
-void stopBoard(){
-    /*
-     * Stops the board, releases memory and stop
-     * any running thread.
-    */
-    gpioTerminate();
-}
+
